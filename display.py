@@ -1,20 +1,24 @@
 import tkinter
 from PIL import Image,ImageTk
 import time
+import multiprocessing as mp
+import threading
 #https://stackoverflow.com/questions/47316266/can-i-display-image-in-full-screen-mode-with-pil
 
 class Display:
     def __init__(self):
         root = tkinter.Tk()
         self.root = root
-        self.screen_width = self.root.winfo_screenwidth()
-        self.screen_height = self.root.winfo_screenheight()
+        self.screen_width = self.root.winfo_screenwidth()/2
+        self.screen_height = self.root.winfo_screenheight()/2
         self.root.geometry("%dx%d+0+0"%(self.screen_width,self.screen_height))
         self.root.focus_set()
         self.root.bind("<Escape>",self.quitProg)
+        self.root.bind("<<SIG>>",self.handlesignal)
         self.canvas = tkinter.Canvas(self.root,width=self.screen_width,height=self.screen_height)
         self.canvas.pack()
         self.canvas.configure(background="black")
+        self.currenttag = 0
 
     def show(self,pilimage):
         imgWidth,imgHeight = pilimage.size
@@ -25,9 +29,15 @@ class Display:
             imgHeight = int(imgHeight*ratio)
             pilimage = pilimage.resize((imgWidth,imgHeight),Image.ANTIALIAS)
         self.showimage = ImageTk.PhotoImage(pilimage)
-        imagesprite = self.canvas.create_image(self.screen_width/2,self.screen_height/2,image=self.showimage)
+        self.imagesprite = self.canvas.create_image(self.screen_width/2,self.screen_height/2,image=self.showimage)
+        self.currenttag = self.imagesprite
+        #self.button = tkinter.Button(self.root,text="change",command=self.update)
+        #self.button.pack()
+        #self.run()
 
-    def update(self,pilimage):
+    def update(self):
+        print("Update is clicked")
+        pilimage = Image.open("bubu.jpg")
         imgWidth,imgHeight = pilimage.size
         if(imgWidth>self.screen_width or imgHeight>self.screen_height):
             ration = min(self.screen_width/imgWidth,self.screen_height/imgHeight)         
@@ -35,7 +45,7 @@ class Display:
             imgHeight = int(imtHeight*ration)                                
             pilimage = pilimage.resize((imgWidth,imgHeight),Image.ANTIALIAS) 
         self.updateimage = ImageTk.PhotoImage(pilimage)
-        self.canvas.itemconfig(self.updateimage)
+        self.canvas.itemconfig(self.currenttag,image=self.updateimage)
 
 
     def run(self):
@@ -43,41 +53,21 @@ class Display:
         self.root.mainloop()
 
     def quitProg(self,event):
+        print(event.widget)
         event.widget.destroy()
 
-def quitProg(event):
-    print("hey",event.widget)
-    event.widget.destroy()
-
-def showPIL(root,pilImage):
-    #root = tkinter.Tk()
-    w,h = root.winfo_screenwidth(),root.winfo_screenheight()
-    root.geometry("%dx%d+0+0"%(w,h))
-    root.focus_set()
-    root.bind("<Escape>", quitProg)
-    canvas = tkinter.Canvas(root,width=w,height=h)
-    canvas.pack()
-    canvas.configure(background="black")
-    imgWidth,imgHeight = pilImage.size
-    if(imgWidth>w or imgHeight>h):
-        ratio = min(w/imgWidth,h/imgHeight)
-        imgWidth = int(imgWidth*ratio)
-        imgHeight = int(imgHeight*ratio)
-        pilImage = pilImage.resize((imgWidth,imgHeight),Image.ANTIALIAS)
-    image = ImageTk.PhotoImage(pilImage)
-    print(image)
-    imagesprite = canvas.create_image(w/2,h/2,image=image)
-    root.overrideredirect(0)
-    root.mainloop()
-
+    def simulatesignal(self):
+        time.sleep(5)
+        self.root.event_generate('<<SIG>>',when='tail')
+    
+    def handlesignal(self,event):
+        print("handle signal")
+        self.update()
 if __name__=="__main__":
-    #root = tkinter.Tk()
     pilImage = Image.open("lion.png")
-    updateimg = Image.open("bubu.jpg")
-    #showPIL(root,pilImage)
     display = Display()
     display.show(pilImage)
-    time.sleep(5)
-    display.update(updateimg)
+    th = threading.Thread(target=display.simulatesignal)
+    th.start()
     display.run()
-    print("Hello World")
+

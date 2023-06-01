@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import pika,sys,os
 def callback(ch,method,properties,body):
+    print(type(body))
+    print(str(body) == "H")
     print("[x] Recieved %r"%body)
 
 def main():
