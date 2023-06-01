@@ -5,14 +5,12 @@ def quitProg(event):
     print("hey",event.widget)
     event.widget.destroy()
 
-def showPIL(pilImage):
-    root = tkinter.Tk()
+def showPIL(root,pilImage):
+    #root = tkinter.Tk()
     w,h = root.winfo_screenwidth(),root.winfo_screenheight()
     root.geometry("%dx%d+0+0"%(w,h))
     root.focus_set()
     root.bind("<Escape>", quitProg)
-    root.update_idletasks()
-    root.overrideredirect(1)
     canvas = tkinter.Canvas(root,width=w,height=h)
     canvas.pack()
     canvas.configure(background="black")
@@ -24,8 +22,11 @@ def showPIL(pilImage):
         pilImage = pilImage.resize((imgWidth,imgHeight),Image.ANTIALIAS)
     image = ImageTk.PhotoImage(pilImage)
     imagesprite = canvas.create_image(w/2,h/2,image=image)
+    root.overrideredirect(0)
     root.mainloop()
 
 if __name__=="__main__":
+    root = tkinter.Tk()
     pilImage = Image.open("lion.png")
-    showPIL(pilImage)
+    showPIL(root,pilImage)
+    print("Hello World")
