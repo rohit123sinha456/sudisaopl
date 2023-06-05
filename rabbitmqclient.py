@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 import pika,sys,os
-
+import configparser
 class MessageBroker:
     def __init__(self,eventloop):
-        self.host = '10.12.1.131'
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        self.host = config["ADMIN"]["URL"]#'10.12.1.131'
+        self.queuename = config["RABBITMQ"]["QUEUE"]
         self.eventloop = eventloop
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.host))
         self.channel = self.connection.channel()
-        self.channel.queue_declare(queue='test')
+        self.channel.queue_declare(queue=self.queuename)
 
     def callback(self,ch,method,properties,body):
         print("[x] Recieved %r"%body)
@@ -16,7 +19,7 @@ class MessageBroker:
                 self.eventloop.event_generate('<<SIG>>',when='tail')
 
     def consume(self):
-        self.channel.basic_consume(queue="test",on_message_callback=self.callback,auto_ack=True)
+        self.channel.basic_consume(queue=self.queuename,on_message_callback=self.callback,auto_ack=True)
         print("[x] Waiting for Message")
         self.channel.start_consuming()
 

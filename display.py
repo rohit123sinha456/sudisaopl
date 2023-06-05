@@ -3,6 +3,7 @@ from PIL import Image,ImageTk
 import time
 import multiprocessing as mp
 import threading
+from getimage import HTTPClient
 #https://stackoverflow.com/questions/47316266/can-i-display-image-in-full-screen-mode-with-pil
 
 class Display:
@@ -19,6 +20,7 @@ class Display:
         self.canvas.pack()
         self.canvas.configure(background="black")
         self.currenttag = 0
+        self.httpclient = HTTPClient()
 
     def show(self,pilimage):
         imgWidth,imgHeight = pilimage.size
@@ -36,16 +38,21 @@ class Display:
         #self.run()
 
     def update(self):
-        print("Update is clicked")
-        pilimage = Image.open("bubu.jpg")
+        print("[x] Updating the image")
+        pilimage = Image.open("temp.jpg")
+        print("[x] Reading teamporary image ")
         imgWidth,imgHeight = pilimage.size
+        print("[x] Getting Image Size")
         if(imgWidth>self.screen_width or imgHeight>self.screen_height):
             ration = min(self.screen_width/imgWidth,self.screen_height/imgHeight)         
             imgWidth = int(imgWidth*ration)                                  
-            imgHeight = int(imtHeight*ration)                                
-            pilimage = pilimage.resize((imgWidth,imgHeight),Image.ANTIALIAS) 
+            imgHeight = int(imgHeight*ration)                                
+            pilimage = pilimage.resize((imgWidth,imgHeight),Image.ANTIALIAS)
+            print("[x] Resizing Image Done")
         self.updateimage = ImageTk.PhotoImage(pilimage)
+        print("[x] Converting Image to TKinter Format")
         self.canvas.itemconfig(self.currenttag,image=self.updateimage)
+        print("[x] Pushing Update to aTkinter Cnvas")
 
 
     def run(self):
@@ -62,7 +69,14 @@ class Display:
     
     def handlesignal(self,event):
         print("handle signal")
-        self.update()
+        try:
+            self.httpclient.getresponse()
+            self.httpclient.saveimage()
+            time.sleep(2)
+            self.update()
+        except Exception as e:
+            print(e)
+            print("Some error in http or update")
 if __name__=="__main__":
     pilImage = Image.open("lion.png")
     display = Display()
