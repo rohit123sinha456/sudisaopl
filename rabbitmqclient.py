@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import pika,sys,os
 import configparser
+import time
+from pika.exceptions import AMQPConnectionError
 class MessageBroker:
     def __init__(self,eventloop):
         config = configparser.ConfigParser()
@@ -8,9 +10,20 @@ class MessageBroker:
         self.host = config["ADMIN"]["URL"]#'10.12.1.131'
         self.queuename = config["RABBITMQ"]["QUEUE"]
         self.eventloop = eventloop
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.host))
-        self.channel = self.connection.channel()
-        self.channel.queue_declare(queue=self.queuename)
+        self.connect()
+        #self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.host))
+        #self.channel = self.connection.channel()
+        #self.channel.queue_declare(queue=self.queuename)
+    def connect(self):
+        while(True):
+            try:
+                self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.host))
+                self.channel = self.connection.channel()
+                self.channel.queue_declare(queue=self.queuename)
+                break
+            except AMQPConnectionError :
+                print("[x] Couldn't connect to Server Retrying in 10 seconds again ..")
+                time.sleep(10)
 
     def callback(self,ch,method,properties,body):
         print("[x] Recieved %r"%body)
