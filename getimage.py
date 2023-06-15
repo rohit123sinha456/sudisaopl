@@ -4,7 +4,8 @@ Run the server.js in D:/Rohit/Sudisa/opl/server.js in my laptop then run this
 import shutil
 import requests
 import configparser
-
+from requests.exceptions import ConnectionError
+import time
 class HTTPClient:
     def __init__(self):
         config = configparser.ConfigParser()
@@ -20,7 +21,14 @@ class HTTPClient:
         #url = 'http://10.12.1.131:3000/file/1'
         #print(url == self.api)
         print("[x] Sending Request to"+self.api)
-        self.response = requests.get(self.api,stream=True)
+        while(True):
+            try:
+                self.response = requests.get(self.api,stream=True)
+                break
+            except ConnectionError:
+                print("[x] Can't reach HTTP Server")
+                time.sleep(5)
+                print("[x] Retrying after 5 seconds")
         print("[x] Response Recieved from "+self.api)
 
     def saveimage(self):

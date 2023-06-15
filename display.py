@@ -16,6 +16,7 @@ class Display:
         self.root.focus_set()
         self.root.bind("<Escape>",self.quitProg)
         self.root.bind("<<SIG>>",self.handlesignal)
+        self.root.bind("<<STOPPROC>>",self.quitProg)
         self.canvas = tkinter.Canvas(self.root,width=self.screen_width,height=self.screen_height)
         self.canvas.pack()
         self.canvas.configure(background="black")
