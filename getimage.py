@@ -32,9 +32,10 @@ class HTTPClient:
         print("[x] Response Recieved from "+self.api)
 
     def saveimage(self):
-        print("[x] Creating temporary file temp.jpg")
-        with open('temp.jpg','wb') as out_file:
+        print("[x] Creating temporary file temp.png")
+        with open('temp.png','wb') as out_file:
             print("[x] Writing HTTP response to temp image")
+            self.response.raw.decode_content = True
             shutil.copyfileobj(self.response.raw,out_file)
         del self.response
         print("[x] Clearing response")

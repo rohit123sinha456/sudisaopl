@@ -6,22 +6,26 @@ import threading
 from getimage import HTTPClient
 #https://stackoverflow.com/questions/47316266/can-i-display-image-in-full-screen-mode-with-pil
 
-class Display:
+class Display(object):
     def __init__(self):
         root = tkinter.Tk()
         self.root = root
-        self.screen_width = self.root.winfo_screenwidth()/2
-        self.screen_height = self.root.winfo_screenheight()/2
+        self.screen_width = self.root.winfo_screenwidth()
+        self.screen_height = self.root.winfo_screenheight()
         self.root.geometry("%dx%d+0+0"%(self.screen_width,self.screen_height))
         self.root.focus_set()
         self.root.bind("<Escape>",self.quitProg)
         self.root.bind("<<SIG>>",self.handlesignal)
         self.root.bind("<<STOPPROC>>",self.quitProg)
+        self.root.bind("<<DFLTSCRN>>",lambda event,imageName="default.png":self.update(imageName))
         self.canvas = tkinter.Canvas(self.root,width=self.screen_width,height=self.screen_height)
         self.canvas.pack()
         self.canvas.configure(background="black")
         self.currenttag = 0
         self.httpclient = HTTPClient()
+    
+    def getEventRoot(self):
+        return self.root
 
     def show(self,pilimage):
         imgWidth,imgHeight = pilimage.size
@@ -38,9 +42,9 @@ class Display:
         #self.button.pack()
         #self.run()
 
-    def update(self):
+    def update(self,imageName='temp.png'):
         print("[x] Updating the image")
-        pilimage = Image.open("temp.jpg")
+        pilimage = Image.open(imageName)
         print("[x] Reading teamporary image ")
         imgWidth,imgHeight = pilimage.size
         print("[x] Getting Image Size")
@@ -57,7 +61,7 @@ class Display:
 
 
     def run(self):
-        self.root.overrideredirect(0)
+        self.root.overrideredirect(1)
         self.root.mainloop()
 
     def quitProg(self,event):
@@ -66,7 +70,7 @@ class Display:
 
     def simulatesignal(self):
         time.sleep(5)
-        self.root.event_generate('<<SIG>>',when='tail')
+        self.root.event_generate('<<DFLTSCRN>>',when='tail')
     
     def handlesignal(self,event):
         print("handle signal")

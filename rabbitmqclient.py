@@ -3,8 +3,9 @@ import pika,sys,os
 import configparser
 import time
 from pika.exceptions import AMQPConnectionError
-from pika.exceptions import AMQPHeartbeatTimeout,ChannelWrongStateError
+from pika.exceptions import *
 from retry import retry
+from display import Display
 class MessageBroker:
     def __init__(self,eventloop):
         config = configparser.ConfigParser()
@@ -53,12 +54,22 @@ class MessageBroker:
             except AMQPHeartbeatTimeout:
                 print("[x] Failed to get heartbeat from rabbitmq server.Please check rabbitMq Server")
                 time.sleep(self.waittime)
+                self.eventloop.event_generate('<<DFLTSCRN>>',when='tail')
             except ChannelWrongStateError:
                 print("[x] Channel is closef. Please check ethernet connection")
                 time.sleep(self.waittime)
+                self.eventloop.event_generate('<<DFLTSCRN>>',when='tail')
+            except ConnectionClosedByBroker:
+                print("[x] The Rabbitmq Server is closed unexpectedly")
+                time.sleep(self.waittime)
+                self.eventloop.event_generate('<<DFLTSCRN>>',when='tail')
             except KeyboardInterrupt:
                 self.channel.stop_consuming()
                 self.connection.close()
+            except Exception as e:
+                print("[x] Exception Occured in RabbitMQ Client",e)
+                time.sleep(self.waittime)
+                self.eventloop.event_generate('<<DFLTSCRN>>',when='tail')
 
 
 if __name__=="__main__":
