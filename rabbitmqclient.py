@@ -4,7 +4,6 @@ import configparser
 import time
 from pika.exceptions import AMQPConnectionError
 from pika.exceptions import *
-from retry import retry
 from display import Display
 from utilities import WORKDIR
 class MessageBroker:
