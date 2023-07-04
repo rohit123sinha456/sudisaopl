@@ -6,14 +6,16 @@ from pika.exceptions import AMQPConnectionError
 from pika.exceptions import *
 from retry import retry
 from display import Display
+from utilities import WORKDIR
 class MessageBroker:
     def __init__(self,eventloop):
         config = configparser.ConfigParser()
-        config.read('config.ini')
+        config.read(WORKDIR+'config.ini')
         self.host = config["ADMIN"]["URL"]#'10.12.1.131'
         self.queuename = config["RABBITMQ"]["QUEUE"]
         self.eventloop = eventloop
         self.waittime = 40
+        print("[x] Initiating the RabbitMQ Client")
         self.connect()
         #self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.host))
         #self.channel = self.connection.channel()

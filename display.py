@@ -61,7 +61,7 @@ class Display(object):
 
 
     def run(self):
-        self.root.overrideredirect(1)
+        self.root.overrideredirect(0)
         self.root.mainloop()
 
     def quitProg(self,event):

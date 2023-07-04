@@ -6,16 +6,17 @@ import requests
 import configparser
 from requests.exceptions import ConnectionError
 import time
+from utilities import WORKDIR
 class HTTPClient:
     def __init__(self):
         config = configparser.ConfigParser()
-        config.read('config.ini')
+        config.read(WORKDIR+'config.ini')
         self.host = config["ADMIN"]["URL"]
         self.port = config["ADMIN"]["PORT"]
         self.endpoint = config["ADMIN"]["API"]
         self.deviceid = config["DEVICE"]["ID"]
         self.api = str('http://'+self.host+':'+self.port+self.endpoint+'/'+self.deviceid)
-        print("[x] Preparing to send request to "+self.api)
+        print("[x] Initiating HTTP Client at "+self.host)
     
     def getresponse(self):
         #url = 'http://10.12.1.131:3000/file/1'

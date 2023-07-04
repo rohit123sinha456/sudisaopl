@@ -1,0 +1,12 @@
+[Unit]
+Description=Sudisa Centralised OPL Service
+After=basic.target graphical.target network-online.target timers.target
+
+[Service]
+Type=simple
+Environment="DISPLAY=:0"
+Environment="XAUTHORITY=/home/pi/.Xauthority"
+ExecStart=/home/pi/Documents/Sudisa/execute.sh
+
+[Install]
+WantedBy=graphical.target
