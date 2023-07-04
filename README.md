@@ -31,7 +31,8 @@
 
 ## Deplyment Strategy
 - Git clone this repository
-- create a virtual environment(env is the virtual environment in this repository)
+- create a virtual environment(env is the virtual environment in this repository)[python -m venv env]
+- activate the virtual env [source env/bin/activate]
 - Pip install all the packages from requirements.txt
 - Update **config.ini**
 - Update **utilities.py**
