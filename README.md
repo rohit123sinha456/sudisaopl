@@ -37,6 +37,7 @@
 - Update **utilities.py**
 - Update **execute.sh**
 - update **debug.sh**
+- Update **oplclient.service**
 - change permission of debug.sh to +x
 - execute execute.sh - To check if things are working properly
 - If yes :- then execute debug.sh
