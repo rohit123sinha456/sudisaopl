@@ -76,9 +76,9 @@ class Display(object):
         print("handle signal")
         try:
             self.httpclient.getresponse()
-            self.httpclient.saveimage()
+            filename = self.httpclient.saveimage()
             time.sleep(2)
-            self.update()
+            self.update(filename)
         except Exception as e:
             print(e)
             print("Some error in http or update")

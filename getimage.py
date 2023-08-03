@@ -25,6 +25,7 @@ class HTTPClient:
         while(True):
             try:
                 self.response = requests.get(self.api,stream=True)
+                #print(self.response.headers["content-type"].split("/")[1])
                 break
             except ConnectionError:
                 print("[x] Can't reach HTTP Server")
@@ -34,12 +35,16 @@ class HTTPClient:
 
     def saveimage(self):
         print("[x] Creating temporary file temp.png")
-        with open('temp.png','wb') as out_file:
+        fileext = self.response.headers["content-type"].split("/")[1]
+        filename = "temp."+fileext
+        print(filename)
+        with open(filename,'wb') as out_file:
             print("[x] Writing HTTP response to temp image")
             self.response.raw.decode_content = True
             shutil.copyfileobj(self.response.raw,out_file)
         del self.response
         print("[x] Clearing response")
+        return filename
 
 if __name__== "__main__":
     client = HTTPClient()
