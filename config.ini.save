@@ -2,15 +2,12 @@
 id = 1
 
 [ADMIN]
-url = 10.12.1.193
+url = 10.12.1.193	
 port = 3000
 api = /api/file
 
 [RABBITMQ]
 queue = test
-username = root
-password = root
-port = 5672
 
 [DEFAULTIMAGE]
 imgpath=/home/pi/Documents/Sudisa/lion.png

@@ -12,8 +12,13 @@ class MessageBroker:
         config.read(WORKDIR+'config.ini')
         self.host = config["ADMIN"]["URL"]#'10.12.1.131'
         self.queuename = config["RABBITMQ"]["QUEUE"]
+        self.username = config["RABBITMQ"]["USERNAME"]
+        self.password = config["RABBITMQ"]["PASSWORD"]
+        self.port = config["RABBITMQ"]["PORT"]
         self.eventloop = eventloop
         self.waittime = 40
+        print("[x] Initialising Credentials")
+        self.credentials = pika.PlainCredentials(self.username,self.password)
         print("[x] Initiating the RabbitMQ Client")
         self.connect()
         #self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.host))
@@ -22,7 +27,7 @@ class MessageBroker:
     def connect(self):
         while(True):
             try:
-                self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.host))
+                self.connection = pika.BlockingConnection(pika.ConnectionParameters(self.host,self.port,'/',self.credentials))
                 self.channel = self.connection.channel()
                 self.channel.queue_declare(queue=self.queuename)
                 self.channel.basic_consume(queue=self.queuename,on_message_callback=self.callback,auto_ack=True)
