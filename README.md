@@ -30,6 +30,7 @@
 - This script copyts the .service file in /etc/systemd/system and reloads the systemd so that our new service is registered and starts the service.
 
 ## Deplyment Strategy
+- From Home -> Preference -> Raspberry pi Configuration -> SSH enable (or sudo systemctl enable ssh)
 - Git clone this repository
 - create a virtual environment(env is the virtual environment in this repository)[python -m venv env]
 - activate the virtual env [source env/bin/activate]
@@ -44,7 +45,7 @@
 - If yes :- then execute debug.sh
 - The enable the service to run on startup with
 	- sudo systemctl enable oplclient.service.
-
+- Reboot (shutdown and restart)
 
 ## System Drawback:-
 - As of now all ther servers must be running(HTTP and RABBITMQ) before starting the client. Once the client service starts running then even if the servier disconnects we can recover, bu inilitally things must be without any roadblock
